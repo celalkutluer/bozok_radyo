@@ -16,6 +16,7 @@ class _MyAppState extends State<MyApp> {
       "http://radyotelevizyon2.bozok.edu.tr:8030/;stream.mp3";
 
   bool isPlaying;
+  double radioVolume = 70;
 
   @override
   void initState() {
@@ -35,7 +36,7 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       home: new Scaffold(
         appBar: new AppBar(
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.red[700],
           title: const Text('Bozok FM'),
         ),
         body: Padding(
@@ -44,9 +45,13 @@ class _MyAppState extends State<MyApp> {
               child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Expanded(child: Padding(
+              Expanded(
+                  child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Image.asset('assets/images/bozokfm_logo_light.jpeg',fit: BoxFit.contain,),
+                child: Image.asset(
+                  'assets/images/bozokfm_logo_light_back_clean.png',
+                  fit: BoxFit.contain,
+                ),
               )),
               Row(
                 children: <Widget>[
@@ -64,6 +69,7 @@ class _MyAppState extends State<MyApp> {
                     child: Icon(
                       Icons.play_circle_filled,
                       size: 66,
+                      color:Colors.red[700]
                     ),
                     onPressed: () {
                       FlutterRadio.playOrPause(url: streamUrl);
@@ -82,7 +88,10 @@ class _MyAppState extends State<MyApp> {
                   ),
                 ],
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              ),SizedBox(height: 10,), /*
+              ),
+              SizedBox(
+                height: 10,
+              ), /*
               Text(
                 'Check Playback Status: $isPlaying',
                 style: TextStyle(fontSize: 25.0),
