@@ -8,8 +8,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="bozok_radyo"
-        android:icon="@mipmap/ic_launcher"
+        android:label="BozokFM"
+        android:icon="@mipmap/ic_launcher_bzk"
         android:usesCleartextTraffic="true">
         <activity
             android:name=".MainActivity"
