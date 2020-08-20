@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -31,40 +32,64 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: new Scaffold(
         appBar: new AppBar(
-          title: const Text('Audio Plugin Android'),
+          backgroundColor: Colors.red,
+          title: const Text('Bozok FM'),
         ),
-        body: new Center(
-            child: Column(
-              children: <Widget>[
-                FlatButton(
-                  child: Icon(Icons.play_circle_filled),
-                  onPressed: () {
-                    FlutterRadio.playOrPause(url: streamUrl);
-                    playingStatus();
-                  },
-                ),
-                FlatButton(
-                  child: Icon(Icons.pause_circle_filled),
-                  onPressed: () {
-                    FlutterRadio.playOrPause(url: streamUrl);
-                    playingStatus();
-                  },
-                ),
-                FlatButton(
-                  child: Icon(Icons.stop),
-                  onPressed: () {
-                    FlutterRadio.playOrPause(url: streamUrl);
-                    playingStatus();
-                  },
-                ),
-                Text(
-                  'Check Playback Status: $isPlaying',
-                  style: TextStyle(fontSize: 25.0),
-                )
-              ],
-            )),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: new Center(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Expanded(child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.asset('assets/images/bozokfm_logo_light.jpeg',fit: BoxFit.contain,),
+              )),
+              Row(
+                children: <Widget>[
+                  FlatButton(
+                    child: Icon(
+                      Icons.pause_circle_filled,
+                      size: 66,
+                    ),
+                    onPressed: () {
+                      FlutterRadio.playOrPause(url: streamUrl);
+                      playingStatus();
+                    },
+                  ),
+                  FlatButton(
+                    child: Icon(
+                      Icons.play_circle_filled,
+                      size: 66,
+                    ),
+                    onPressed: () {
+                      FlutterRadio.playOrPause(url: streamUrl);
+                      playingStatus();
+                    },
+                  ),
+                  FlatButton(
+                    child: Icon(
+                      Icons.stop,
+                      size: 66,
+                    ),
+                    onPressed: () {
+                      FlutterRadio.playOrPause(url: streamUrl);
+                      playingStatus();
+                    },
+                  ),
+                ],
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ),SizedBox(height: 10,), /*
+              Text(
+                'Check Playback Status: $isPlaying',
+                style: TextStyle(fontSize: 25.0),
+              )*/
+            ],
+          )),
+        ),
       ),
     );
   }
