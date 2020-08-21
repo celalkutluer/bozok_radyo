@@ -15,6 +15,7 @@ class _MyAppState extends State<MyApp> {
 
   bool isPlaying;
   bool isLoad = false;
+  bool darkThemeEnabled = true;
 
   @override
   void initState() {
@@ -30,45 +31,57 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(title: 'Bozok FM',
-      theme: ThemeData(primaryColor: Colors.red[700]),
+    return new MaterialApp(
+      title: 'Bozok FM',
+      theme: darkThemeEnabled ? ThemeData.light() : ThemeData.dark(),
       debugShowCheckedModeBanner: false,
       home: new Scaffold(
         appBar: new AppBar(
           title: const Text('Bozok FM'),
           backgroundColor: Colors.red[700],
+          actions: [
+            Switch(
+                value: darkThemeEnabled,
+                onChanged: (newDarkThemeEnabled) {
+                  setState(() {
+                    darkThemeEnabled = newDarkThemeEnabled;
+                  });
+                },activeColor: Colors.red[900],)
+          ],
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: new Center(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Expanded(
-                  child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Image.asset(
-                  'assets/images/bozokfm_logo_light_back_clean.png',
-                  fit: BoxFit.contain,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Expanded(
+                    child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image.asset(darkThemeEnabled ?
+                    'assets/images/bozokfm_logo_light_back_clean.png':'assets/images/bozokfm_logo_for_dark_back_clean.png',
+                    fit: BoxFit.contain,
+                  ),
+                )),
+                FlatButton(
+                  child: Icon(
+                    isLoad
+                        ? Icons.pause_circle_filled
+                        : Icons.play_circle_filled,
+                    size: 100,
+                    color: isLoad ? Colors.black : Colors.red[700],
+                  ),
+                  onPressed: () {
+                    isLoad = !isLoad;
+                    FlutterRadio.playOrPause(url: streamUrl);
+                    playingStatus();
+                  },
                 ),
-              )),
-              FlatButton(
-                child: Icon(
-                  isLoad ?  Icons.pause_circle_filled:Icons.play_circle_filled ,
-                  size: 100,
-                  color: isLoad ? Colors.black : Colors.red[700],
+                SizedBox(
+                  height: 10,
                 ),
-                onPressed: () {
-                  isLoad = !isLoad;
-                  FlutterRadio.playOrPause(url: streamUrl);
-                  playingStatus();
-                },
-              ),
-              SizedBox(
-                height: 10,
-              ),
-            ],
-          ),
+              ],
+            ),
           ),
         ),
       ),
