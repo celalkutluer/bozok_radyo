@@ -68,7 +68,8 @@ class _MyAppState extends State<MyApp> {
                 height: 10,
               ),
             ],
-          )),
+          ),
+          ),
         ),
       ),
     );
@@ -81,49 +82,3 @@ class _MyAppState extends State<MyApp> {
     });
   }
 }
-/*Row(
-                children: <Widget>[
-
-                 /* FlatButton(
-                    child: Icon(
-                      Icons.pause_circle_filled,
-                      size: 66,
-                      color: isLoad ? Colors.red[700]:Colors.black,
-                    ),
-                    onPressed: () {
-                      isLoad=!isLoad;
-                      FlutterRadio.playOrPause(url: streamUrl);
-                      playingStatus();
-                    },
-                  ),
-                  FlatButton(
-                    child: Icon(
-                      Icons.play_circle_filled,
-                      size: 66,
-                      color: isLoad ? Colors.red[700]:Colors.black,
-                    ),
-                    onPressed: () {
-                      isLoad=!isLoad;
-                      FlutterRadio.playOrPause(url: streamUrl);
-                      playingStatus();
-                    },
-                  ),
-                  FlatButton(
-                    child: Icon(
-                      Icons.stop,
-                      size: 66,
-                      color: isLoad ? Colors.red[700]:Colors.black,
-                    ),
-                    onPressed: () {
-                      isLoad=!isLoad;
-                      FlutterRadio.playOrPause(url: streamUrl);
-                      playingStatus();
-                    },
-                  ),*/
-                ],
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              ),*/
-/*Text(
-                'Check Playback Status: $isPlaying',
-                style: TextStyle(fontSize: 25.0),
-              )*/
