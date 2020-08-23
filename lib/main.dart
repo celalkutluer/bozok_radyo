@@ -37,16 +37,23 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       home: new Scaffold(
         appBar: new AppBar(
-          title: const Text('Bozok FM'),
+          title: Text(
+            'Bozok FM',
+            style: TextStyle(
+                color: darkThemeEnabled ? Colors.white : Colors.black54),
+          ),
           backgroundColor: Colors.red[700],
           actions: [
             Switch(
-                value: darkThemeEnabled,
-                onChanged: (newDarkThemeEnabled) {
-                  setState(() {
-                    darkThemeEnabled = newDarkThemeEnabled;
-                  });
-                },activeColor: Colors.red[900],)
+              value: darkThemeEnabled,
+              onChanged: (newDarkThemeEnabled) {
+                setState(() {
+                  darkThemeEnabled = newDarkThemeEnabled;
+                });
+              },
+              activeColor: Colors.red[900],
+              inactiveThumbColor: Colors.black54,
+            )
           ],
         ),
         body: Padding(
@@ -56,13 +63,16 @@ class _MyAppState extends State<MyApp> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Expanded(
-                    child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Image.asset(darkThemeEnabled ?
-                    'assets/images/bozokfm_logo_light_back_clean.png':'assets/images/bozokfm_logo_for_dark_back_clean.png',
-                    fit: BoxFit.contain,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Image.asset(
+                      darkThemeEnabled
+                          ? 'assets/images/bozokfm_logo_light_back_clean.png'
+                          : 'assets/images/bozokfm_logo_for_dark_back_clean.png',
+                      fit: BoxFit.contain,
+                    ),
                   ),
-                )),
+                ),
                 FlatButton(
                   child: Icon(
                     isLoad
