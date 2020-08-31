@@ -17,6 +17,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   bool isPlaying;
   bool isLoad = false;
   bool isdarkThemeEnabled = true;
+  bool isTimer = true;
 
   AudioManager audioManager;
   int maxVol, currentVol;
@@ -39,11 +40,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     setState(() {
       if (state == AppLifecycleState.resumed) {
         print('Lifecycle :  resumed');
+        isTimer=false;
       }
       if (state == AppLifecycleState.paused) {
         print('Lifecycle :  Paused');
+        isTimer=true;
         Timer(Duration(hours: 1), () {
-          audioStop();
+          if (isTimer) {
+            audioStop();
+          }
           isLoad = !isLoad;
         });
       }
@@ -71,7 +76,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
             style: TextStyle(
                 color: isdarkThemeEnabled ? Colors.black : Colors.red[900]),
           ),
-          backgroundColor: isdarkThemeEnabled ?  Colors.red[900]:ThemeData.dark().canvasColor,
+          backgroundColor: isdarkThemeEnabled
+              ? Colors.red[900]
+              : ThemeData.dark().canvasColor,
           actions: [
             Switch(
               value: isdarkThemeEnabled,
@@ -104,7 +111,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 ),
                 (currentVol != null || maxVol != null)
                     ? Slider(
-                        activeColor: isdarkThemeEnabled ? Colors.black : Colors.red[900],
+                        activeColor:
+                            isdarkThemeEnabled ? Colors.black : Colors.red[900],
                         value: currentVol / 1.0,
                         divisions: maxVol,
                         max: maxVol / 1.0,
