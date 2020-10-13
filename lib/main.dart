@@ -4,6 +4,8 @@ import 'package:flutter_radio/flutter_radio.dart';
 import 'package:volume/volume.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 void main() => runApp(new MyApp());
 
@@ -13,13 +15,27 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  SharedPreferences preferences;
+
+  bool isdarkThemeEnabled = false;
+  int uykuZamaniCins = 1;
+  double uykuZamaniSure = 1.0;
+
+  Future getLocalData() async {
+    preferences = await SharedPreferences.getInstance();
+    setState(() {
+      isdarkThemeEnabled = preferences.getBool('isdarkThemeEnabled') ?? false;
+      uykuZamaniCins = preferences.getInt('uykuZamaniCins') ?? 1;
+      uykuZamaniSure = preferences.getDouble('uykuZamaniSure') ?? 1.0;
+    });
+  }
+
   Future<void> _launched;
   static const streamUrl =
       "http://radyotelevizyon2.bozok.edu.tr:8030/;stream.mp3";
 
   bool isPlaying;
   bool isLoad = false;
-  bool isdarkThemeEnabled = true;
   bool isTimer = true;
 
   AudioManager audioManager;
@@ -48,12 +64,31 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       if (state == AppLifecycleState.paused) {
         print('Lifecycle :  Paused');
         isTimer = true;
-        Timer(Duration(hours: 1), () {
-          if (isTimer) {
-            audioStop();
-          }
-          isLoad = !isLoad;
-        });
+        if (uykuZamaniCins == 1) {
+          //dakika
+          Timer(
+              Duration(
+                  minutes: uykuZamaniSure == 0 ? 1 : uykuZamaniSure.toInt()),
+              () {
+            if (isTimer) {
+              audioStop();
+            }
+            isLoad = !isLoad;
+          });
+        } else if (uykuZamaniCins == 2) {
+          //saat
+          Timer(
+              Duration(
+                  hours: uykuZamaniSure == 0
+                      ? 1
+                      : uykuZamaniSure >= 24 ? 24 : uykuZamaniSure.toInt()),
+              () {
+            if (isTimer) {
+              audioStop();
+            }
+            isLoad = !isLoad;
+          });
+        }
       }
     });
     super.didChangeAppLifecycleState(state);
@@ -67,6 +102,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    getLocalData();
     return new MaterialApp(
       color: Colors.white,
       title: 'Bozok FM',
@@ -74,28 +110,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       debugShowCheckedModeBanner: false,
       home: new Scaffold(
         appBar: new AppBar(
-          iconTheme: IconThemeData(
-              color: isdarkThemeEnabled ? Colors.black : Colors.red[900]),
-          title: Text(
-            'Bozok FM',
-            style: TextStyle(
-                color: isdarkThemeEnabled ? Colors.black : Colors.red[900]),
-          ),
+          iconTheme: IconThemeData(color: myColor()),
+          title: myText('Bozok FM'),
           backgroundColor: isdarkThemeEnabled
               ? Colors.red[900]
               : ThemeData.dark().canvasColor,
-          actions: [
-            Switch(
-              value: isdarkThemeEnabled,
-              onChanged: (newDarkThemeEnabled) {
-                setState(() {
-                  isdarkThemeEnabled = newDarkThemeEnabled;
-                });
-              },
-              activeColor: Colors.black,
-              inactiveThumbColor: Colors.red[900],
-            )
-          ],
+          actions: [mySwitch()],
         ),
         drawer: Drawer(
           child: ListView(
@@ -123,45 +143,25 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               ExpansionTile(
                 leading: Icon(
                   Icons.perm_device_information,
-                  color: isdarkThemeEnabled ? Colors.black87 : Colors.red[900],
+                  color: myColor(),
                 ),
-                title: Text(
-                  'Kurumsal',
-                  style: TextStyle(
-                    color:
-                        isdarkThemeEnabled ? Colors.black87 : Colors.red[900],
-                  ),
-                ),
+                title: myText('Kurumsal'),
                 trailing: Icon(
                   Icons.arrow_drop_down,
-                  color: isdarkThemeEnabled ? Colors.black87 : Colors.red[900],
+                  color: myColor(),
                 ),
                 children: <Widget>[
                   ExpansionTile(
-                    title: Text(
-                      'Biz Kimiz',
-                      style: TextStyle(
-                        color: isdarkThemeEnabled
-                            ? Colors.black87
-                            : Colors.red[900],
-                      ),
-                    ),
+                    title: myText('Biz Kimiz'),
                     trailing: Icon(
                       Icons.arrow_drop_down,
-                      color:
-                          isdarkThemeEnabled ? Colors.black87 : Colors.red[900],
+                      color: myColor(),
                     ),
                     children: [
                       Padding(
                           padding: EdgeInsets.all(16),
-                          child: Text(
-                            "Yozgat Bozok Üniversitesi bünyesinde 2019 yılında yayın hayatına başlayan 107.0 Bozok FM kesintisiz yayın ve canlı yayınlarıyla dinleyicilerine kaliteli yayınlar sunmaktadır",
-                            style: TextStyle(
-                              color: isdarkThemeEnabled
-                                  ? Colors.black87
-                                  : Colors.red[900],
-                            ),
-                          ))
+                          child: myText(
+                              "Yozgat Bozok Üniversitesi bünyesinde 2019 yılında yayın hayatına başlayan 107.0 Bozok FM kesintisiz yayın ve canlı yayınlarıyla dinleyicilerine kaliteli yayınlar sunmaktadır"))
                     ],
                   ),
                 ],
@@ -169,18 +169,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               ExpansionTile(
                 leading: Icon(
                   Icons.contact_mail,
-                  color: isdarkThemeEnabled ? Colors.black87 : Colors.red[900],
+                  color: myColor(),
                 ),
-                title: Text(
-                  'İletişim',
-                  style: TextStyle(
-                    color:
-                        isdarkThemeEnabled ? Colors.black87 : Colors.red[900],
-                  ),
-                ),
+                title: myText('İletişim'),
                 trailing: Icon(
                   Icons.arrow_drop_down,
-                  color: isdarkThemeEnabled ? Colors.black87 : Colors.red[900],
+                  color: myColor(),
                 ),
                 children: [
                   Padding(
@@ -190,10 +184,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                           Text(
                             'Takipte Kalın...',
                             style: TextStyle(
-                              fontSize: 36,
-                              color: isdarkThemeEnabled
-                                  ? Colors.black87
-                                  : Colors.red[900],
+                              color: myColor(),
+                              fontSize: 36.0,
                             ),
                           ),
                           SizedBox(
@@ -206,17 +198,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   FaIcon(FontAwesomeIcons.globe,
-                                      color: isdarkThemeEnabled
-                                          ? Colors.black87
-                                          : Colors.red[900]),
-                                  Text(
-                                    'Web Sitemiz',
-                                    style: TextStyle(
-                                      color: isdarkThemeEnabled
-                                          ? Colors.black87
-                                          : Colors.red[900],
-                                    ),
-                                  ),
+                                      color: myColor()),
+                                  myText('Web Sitemiz'),
                                 ]),
                             onPressed: () => setState(() {
                               _launched = _launchInBrowser(
@@ -230,17 +213,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   FaIcon(FontAwesomeIcons.twitter,
-                                      color: isdarkThemeEnabled
-                                          ? Colors.black87
-                                          : Colors.red[900]),
-                                  Text(
-                                    '@bozok_fm',
-                                    style: TextStyle(
-                                      color: isdarkThemeEnabled
-                                          ? Colors.black87
-                                          : Colors.red[900],
-                                    ),
-                                  ),
+                                      color: myColor()),
+                                  myText('@bozok_fm'),
                                 ]),
                             onPressed: () => setState(() {
                               _launched = _launchInBrowser(
@@ -254,17 +228,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
                                   FaIcon(FontAwesomeIcons.instagram,
-                                      color: isdarkThemeEnabled
-                                          ? Colors.black87
-                                          : Colors.red[900]),
-                                  Text(
-                                    '@107bozokfm',
-                                    style: TextStyle(
-                                      color: isdarkThemeEnabled
-                                          ? Colors.black87
-                                          : Colors.red[900],
-                                    ),
-                                  ),
+                                      color: myColor()),
+                                  myText('@107bozokfm'),
                                 ]),
                             onPressed: () => setState(() {
                               _launched = _launchInBrowser(
@@ -278,75 +243,133 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
               ExpansionTile(
                 leading: Icon(
                   Icons.info,
-                  color: isdarkThemeEnabled ? Colors.black87 : Colors.red[900],
+                  color: myColor(),
                 ),
-                title: Text(
-                  'Geliştirici',
-                  style: TextStyle(
-                    color:
-                        isdarkThemeEnabled ? Colors.black87 : Colors.red[900],
-                  ),
-                ),
+                title: myText('Geliştirici'),
                 trailing: Icon(
                   Icons.arrow_drop_down,
-                  color: isdarkThemeEnabled ? Colors.black87 : Colors.red[900],
+                  color: myColor(),
                 ),
                 children: [
                   Padding(
                       padding: EdgeInsets.all(16),
                       child: Column(
                         children: [
-                          Text(
-                            "Bu proje Yozgat Bozok Üniversitesi öğrencilerinden Celal KUTLUER tarafından, Flutter yazılım geliştirme kiti kullanılarak cross-platform olarak Android ve İOS da çalıştırılabilir şekilde geliştirilmiştir.",
-                            style: TextStyle(
-                              color: isdarkThemeEnabled
-                                  ? Colors.black87
-                                  : Colors.red[900],
-                            ),
-                          ),
+                          myText(
+                              "Bu proje Yozgat Bozok Üniversitesi öğrencilerinden Celal KUTLUER tarafından, Flutter yazılım geliştirme kiti kullanılarak cross-platform olarak Android ve İOS da çalıştırılabilir şekilde geliştirilmiştir."),
                           SizedBox(
                             height: 10,
                           ),
-                          Text(
-                            "Proje kaynak kodlarına https://github.com/celalkutluer/bozok_radyo adresinden erişilebilir.",
-                            style: TextStyle(
-                              color: isdarkThemeEnabled
-                                  ? Colors.black87
-                                  : Colors.red[900],
-                            ),
-                          ),
+                          myText(
+                              "Proje kaynak kodlarına https://github.com/celalkutluer/bozok_radyo adresinden erişilebilir."),
                         ],
                       ))
                 ],
               ),
               ExpansionTile(
                 leading: Icon(
-                  Icons.warning,
-                  color: isdarkThemeEnabled ? Colors.black87 : Colors.red[900],
+                  Icons.settings,
+                  color: myColor(),
                 ),
-                title: Text(
-                  'Notlar',
-                  style: TextStyle(
-                    color:
-                        isdarkThemeEnabled ? Colors.black87 : Colors.red[900],
-                  ),
-                ),
+                title: myText('Ayarlar'),
                 trailing: Icon(
                   Icons.arrow_drop_down,
-                  color: isdarkThemeEnabled ? Colors.black87 : Colors.red[900],
+                  color: myColor(),
                 ),
                 children: [
-                  Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Text(
-                      "Uygulama ekran kilidi vb. gibi durumlar ile pasife düştükten 1 saat sonra batarya ve mobil veri kullanımı düşünülerek otomatik kapanacak şekilde ayarlanmıştır. Sağlıkla kullanınız.",
-                      style: TextStyle(
-                        color: isdarkThemeEnabled
-                            ? Colors.black87
-                            : Colors.red[900],
+                  Row(children: <Widget>[
+                    Expanded(child: Divider()),
+                    myText('Karanlık Mod'),
+                    Expanded(child: Divider()),
+                  ]),
+                  mySwitch(),
+                  Row(children: <Widget>[
+                    Expanded(child: Divider()),
+                    myText('Uyku Zamanı'),
+                    Expanded(child: Divider()),
+                  ]),
+                  DropdownButton(
+                      icon: Icon(
+                        Icons.arrow_drop_down,
+                        color: myColor(),
                       ),
-                    ),
-                  )
+                      value: uykuZamaniCins,
+                      items: [
+                        DropdownMenuItem(
+                          child: myText("Yok"),
+                          value: 0,
+                        ),
+                        DropdownMenuItem(
+                          child: myText("Dakika"),
+                          value: 1,
+                        ),
+                        DropdownMenuItem(child: myText('Saat'), value: 2),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          uykuZamaniCins = value;
+                          preferences.setInt('uykuZamaniCins', uykuZamaniCins);
+                          int zaman = uykuZamaniSure.toInt();
+                          Fluttertoast.showToast(
+                              msg: uykuZamaniCins == 0
+                                  ? 'Uyku zamanı ayarlanmadı.'
+                                  : uykuZamaniCins == 2
+                                      ? 'Uyku zamanı $zaman saat olarak ayarlandı.'
+                                      : 'Uyku zamanı $zaman dakika olarak ayarlandı.',
+                              backgroundColor: Colors.transparent,
+                              textColor: myColor());
+                        });
+                      }),
+                  uykuZamaniCins == 0
+                      ? SizedBox(
+                          height: 2,
+                        )
+                      : Slider(
+                          activeColor: myColor(),
+                          value: uykuZamaniSure == 0
+                              ? 1
+                              : uykuZamaniCins == 2
+                                  ? uykuZamaniSure > 24 ? 24 : uykuZamaniSure
+                                  : uykuZamaniSure,
+                          min: 0,
+                          max: uykuZamaniCins == 2 ? 24 : 60,
+                          divisions: uykuZamaniCins == 2 ? 24 : 12,
+                          label: (uykuZamaniSure == 0
+                                  ? 1
+                                  : uykuZamaniCins == 2
+                                      ? uykuZamaniSure > 24
+                                          ? 24
+                                          : uykuZamaniSure
+                                      : uykuZamaniSure)
+                              .round()
+                              .toString(),
+                          onChanged: (double value) {
+                            setState(() {
+                              uykuZamaniSure = value;
+                              if (uykuZamaniSure == 0) {
+                                uykuZamaniSure = 1;
+                              }
+                              if (uykuZamaniCins == 2 && uykuZamaniSure > 24) {
+                                uykuZamaniSure = 24;
+                              }
+                              preferences.setDouble(
+                                  'uykuZamaniSure', uykuZamaniSure);
+                            });
+                          },
+                          onChangeEnd: (double v) {
+                            setState(() {
+                              int zaman = uykuZamaniSure.toInt();
+                              Fluttertoast.showToast(
+                                  msg: uykuZamaniCins == 0
+                                      ? 'Uyku zamanı ayarlanmadı.'
+                                      : uykuZamaniCins == 2
+                                          ? 'Uyku zamanı $zaman saat olarak ayarlandı.'
+                                          : 'Uyku zamanı $zaman dakika olarak ayarlandı.',
+                                  backgroundColor: Colors.transparent,
+                                  textColor: myColor());
+                            });
+                          },
+                        ),
                 ],
               ),
             ],
@@ -371,8 +394,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                 ),
                 (currentVol != null || maxVol != null)
                     ? Slider(
-                        activeColor:
-                            isdarkThemeEnabled ? Colors.black : Colors.red[900],
+                        activeColor: myColor(),
                         value: currentVol / 1.0,
                         divisions: maxVol,
                         max: maxVol / 1.0,
@@ -389,7 +411,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                         ? Icons.pause_circle_filled
                         : Icons.play_circle_filled,
                     size: 100,
-                    color: isdarkThemeEnabled ? Colors.black : Colors.red[900],
+                    color: myColor(),
                   ),
                   onPressed: () {
                     isLoad = !isLoad;
@@ -405,6 +427,34 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           ),
         ),
       ),
+    );
+  }
+
+  Color myColor() {
+    return isdarkThemeEnabled ? Colors.black : Colors.red[900];
+  }
+
+  Widget myText(String data) {
+    return Text(
+      data,
+      style: TextStyle(
+        color: myColor(),
+      ),
+    );
+  }
+
+  Widget mySwitch() {
+    return Switch(
+      value: isdarkThemeEnabled,
+      onChanged: (newDarkThemeEnabled) {
+        setState(() {
+          isdarkThemeEnabled = newDarkThemeEnabled;
+          preferences.setBool('isdarkThemeEnabled', isdarkThemeEnabled);
+          print('modun değişti');
+        });
+      },
+      activeColor: Colors.black,
+      inactiveThumbColor: Colors.red[900],
     );
   }
 
